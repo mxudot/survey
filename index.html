@@ -3,28 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey</title>
+    <title>Random Redirect with Cookies</title>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        // Function to get a cookie
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
             var urls = [
-            "https://docs.google.com/forms/d/e/1FAIpQLSf4TB2BwPTWvp-KTWA4-bcwiwuKk89sXIPsOa1p-tgBcHIdiQ/viewform?usp=sf_link",
-            "https://docs.google.com/forms/d/e/1FAIpQLSdqRWoJ7bvvmTjMIMs92_Yg6kVC8ySoJuyZI6v19YrTfmI5lw/viewform?usp=sf_link",
-            "https://docs.google.com/forms/d/e/1FAIpQLSflqtvStJPVE75Z1XjCoidTPP5B-dQQerhhJu8guQv71L05AA/viewform?usp=sf_link",
-            "https://docs.google.com/forms/d/e/1FAIpQLScMVvCmayp2DhMdHIbvjxpAQFY_-BWIKAoD1Ula17Qsma2-Rg/viewform?usp=sf_link",
-            "https://docs.google.com/forms/d/e/1FAIpQLSdM-EXXcs8iB_GywyvAax3gNECI8mBKdbIRBHid7tNQZ5GA7A/viewform?usp=sf_link",
-            "https://docs.google.com/forms/d/e/1FAIpQLSdHui4YwtgT4zyM0R-6IwrwisI_U33VfSH4SSR2oXPaqAwAMw/viewform?usp=sf_link",
-            "https://docs.google.com/forms/d/e/1FAIpQLSfokk1SjNocoTe3_YMA34hKwfvyQdWS1huf6fiQZ8qCupAXog/viewform?usp=sf_link",
-            "https://docs.google.com/forms/d/e/1FAIpQLSc496bE2noLBxAudG4qpWHc9HzfCAvuAbKNYlIPCmIVZc8n-Q/viewform?usp=sf_link",
-            "https://docs.google.com/forms/d/e/1FAIpQLSeFdpmfErDoX816h9w2B9ox2jFVquQ-ADIxkxmJY6xKjOrpWg/viewform?usp=sf_link",
-            "https://docs.google.com/forms/d/e/1FAIpQLSdd7kcC9dxJfewOdMBRPu0mFFuw4YQGoMiBh19Jr8OZR2DnhA/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLSf4TB2BwPTWvp-KTWA4-bcwiwuKk89sXIPsOa1p-tgBcHIdiQ/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLSdqRWoJ7bvvmTjMIMs92_Yg6kVC8ySoJuyZI6v19YrTfmI5lw/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLSflqtvStJPVE75Z1XjCoidTPP5B-dQQerhhJu8guQv71L05AA/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLScMVvCmayp2DhMdHIbvjxpAQFY_-BWIKAoD1Ula17Qsma2-Rg/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLSdM-EXXcs8iB_GywyvAax3gNECI8mBKdbIRBHid7tNQZ5GA7A/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLSdHui4YwtgT4zyM0R-6IwrwisI_U33VfSH4SSR2oXPaqAwAMw/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLSfokk1SjNocoTe3_YMA34hKwfvyQdWS1huf6fiQZ8qCupAXog/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLSc496bE2noLBxAudG4qpWHc9HzfCAvuAbKNYlIPCmIVZc8n-Q/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLSeFdpmfErDoX816h9w2B9ox2jFVquQ-ADIxkxmJY6xKjOrpWg/viewform?usp=sf_link",
+                "https://docs.google.com/forms/d/e/1FAIpQLSdd7kcC9dxJfewOdMBRPu0mFFuw4YQGoMiBh19Jr8OZR2DnhA/viewform?usp=sf_link",
             ];
 
-            var randomIndex = Math.floor(Math.random() * urls.length);
-            window.location.href = urls[randomIndex];
+            var surveyUrl = getCookie("surveyUrl");
+
+            if (!surveyUrl) {
+                var randomIndex = Math.floor(Math.random() * urls.length);
+                surveyUrl = urls[randomIndex];
+                setCookie("surveyUrl", surveyUrl, 30); // Cookie expires in 30 days
+            }
+
+            window.location.href = surveyUrl;
         });
     </script>
 </head>
 <body>
-    <p>Redirecting to a survey...</p>
+    <p>Redirecting to a random survey...</p>
 </body>
 </html>
